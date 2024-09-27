@@ -60,12 +60,24 @@ local function generate_assign_expression(code, tree, index, variables)
   local right_value = right.value or right.name
   local result = ""
 
+  -- Обработка присваивания массиву
+  if right.type == "get_array" then
+    right_value = right.name..'['..right.value..']'
+  end
+
+  -- Обработка массивов для правого значения
+  if right.type == "array" then
+    right_value = right.array:gsub("%[(.+)%]", "{%1}")
+  elseif right.type == "get_array" then
+    right_value = right.name..'['..right.value..']'
+  end
+
   -- Правое присваивание это команда
   if right.type == "command" then
     local command, _offset = generate_returned_command(tree, index+1)
     offset = offset + _offset
     result = result .. command
-  else
+  elseif left.type == "variable" then
     -- Необъявленным переменным добавляется local
     if variables[left.name].declared then
       result = result .. spaces .. left_value .. " = " .. right_value
@@ -73,6 +85,14 @@ local function generate_assign_expression(code, tree, index, variables)
       variables[left.name].declared = true
       result = result .. spaces .. "local " .. left_value .. " = " .. right_value
     end
+  elseif left.type == "get_array" then
+    result = result .. spaces .. left.name.. '['..left.value..']' .. " = " .. right_value
+  end
+
+  -- Если это массив, сразу выходим
+  if right.type and right.type == "array" then
+    table.insert(code, result)
+    return offset
   end
 
   -- Если после выражения с присваиванием, есть арифметические выражения
@@ -97,8 +117,16 @@ local function generate_PRINTL(code, tree, i)
   local offset = 1
 
   -- Печатаемое значение
-  local value = tree[i + offset]
-  value = value.name or value.value
+  local node = tree[i + offset]
+
+  local value
+  if node.type == "get_array" then
+    -- Печать массива
+    value = node.name..'['..node.value..']'
+  else
+    -- Печать переменной
+    value = node.name or node.value
+  end
 
   --
   local spaces = string.rep(" ", space_to_if)
@@ -112,12 +140,20 @@ local function generate_PRINT(code, tree, i)
   local offset = 1
 
   -- Печатаемое значение
-  local value = tree[i + offset]
-  value = value.name or value.value
+  local node = tree[i + offset]
+
+  local value
+  if node.type == "get_array" then
+    -- Печать массива
+    value = node.name..'['..node.value..']'
+  else
+    -- Печать переменной
+    value = node.name or node.value
+  end
 
   --
   local spaces = string.rep(" ", space_to_if)
-  table.insert(code, spaces .. "io.write("..value..")")
+  table.insert(code, spaces .. "io.write(tostring("..value.."))")
 
   return offset
 end
@@ -155,10 +191,12 @@ local function generate_conditional_expression(code, tree, i)
 
     if node.type == "int" or node.type == "string" or node.type == "variable" then
       result = result .. (node.value or node.name)
+    elseif node.type == "get_array" then
+      result = result .. node.name.."["..node.value.."]"
     elseif node.type == "and_expression" then
       result = result .. ') and ('
     elseif node.type == "or_expression" then
-      result = result .. ') and ('
+      result = result .. ') or ('
     elseif node.type == "comparison_operator" then
       local op = node.operator
       if op == "!=" then

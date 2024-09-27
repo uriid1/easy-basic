@@ -1,5 +1,4 @@
 #!/bin/env lua
-
 local lexer = require("src.lexer")
 local gen_tree = require("src.gen_tree")
 local gen_code = require("src.gen_code")
@@ -16,4 +15,9 @@ local tokens = lexer(source)
 local tree, variables = gen_tree(tokens)
 local t_LUA_code = gen_code(tree, variables)
 local lua_source = table.concat(t_LUA_code, "\n")
-load(lua_source)()
+
+if arg[2] and arg[2] == "--lua" then
+  print(lua_source)
+else
+  load(lua_source)()
+end

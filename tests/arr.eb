@@ -1,0 +1,12 @@
+# Массивы
+ARRAY numbers = [1, 2, 3, 4, 5]
+ARRAY frutis = ["apple", "banana", "orange"]
+
+PRINTL numbers[3]
+PRINTL frutis[1]
+
+numbers[3] = 33
+frutis[1] = "TEST"
+
+PRINTL numbers[3]
+PRINTL frutis[1]

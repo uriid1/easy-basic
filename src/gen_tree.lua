@@ -77,6 +77,66 @@ local function parse_INT(tree, tokens, index)
   return offset
 end
 
+-- Парсинг типа данных Array
+local function parse_ARRAY(tree, tokens, index)
+  -- Смешение токена ARRAY
+  local offset = 1
+  -- Имя переменной
+  local var_name = tokens[index + offset]
+
+  -- Проверка, что массив инициализируется
+  offset = offset + 1
+  local operator = tokens[index + offset]
+
+  if operator ~= "=" then
+    error("Ошибка инициализации массива: "..var_name)
+  end
+
+  -- Парсинг массива
+  offset = offset + 1
+  local start_arr = tokens[index + offset]
+  if not start_arr:find("^%[") then
+    error("Ошибка инициализации массива: "..var_name)
+  end
+
+  -- Тело массива
+  local arr_text = ""
+  for i = offset, math.huge do
+    if tokens[index + offset] and tokens[index + offset]:find("%]$") then
+      break
+    elseif tokens[index + offset] then
+      offset = i
+      arr_text = arr_text .. tokens[index + offset]
+    else
+      break
+    end
+  end
+
+  -- Добавление в дерево переменной в список переменных
+  local data = {
+    type = "variable",
+    name = var_name,
+    data_type = "array",
+  }
+
+  variables[var_name] = data
+  table.insert(tree, data)
+
+  -- Добавление в дерево assign_expression
+  table.insert(tree, {
+    type = "assign_expression",
+    operator = operator,
+  })
+
+  -- Добавление в дерево
+  table.insert(tree, {
+    type = "array",
+    array = arr_text
+  })
+
+  return offset
+end
+
 -- Парсинг типа арифметического или математического выражения
 local function parse_expression(tree, tokens, index)
   -- Смешение токена выражения
@@ -196,6 +256,8 @@ local function gen_tree(tokens)
       })
       i = i + offset
 
+    -- Типы данных
+    --
     elseif token == "STRING" then
       local offet = parse_STRING(tree, tokens, i)
       i = i + offet + 1
@@ -204,23 +266,20 @@ local function gen_tree(tokens)
       local offet = parse_INT(tree, tokens, i)
       i = i + offet + 1
 
+    elseif token == "ARRAY" then
+      local offset = parse_ARRAY(tree, tokens, i)
+      i = i + offset + 1
+    --
+
     elseif token == "="
       or token == "+"
       or token == "-"
       or token == "*"
       or token == "/"
+      or token == "%"
     then
       local offet = parse_expression(tree, tokens, i)
       i = i + offet
-
-    -- Обработка строковых и числовых значений
-    elseif type(token) == "table" then
-      -- Добавление в дерево
-      table.insert(tree, {
-        type = token.type,
-        value = token.value
-      })
-      i = i + 1
 
     -- Подразумеваем, что токен это переменная, которая уже известна
     elseif variables[token] then
@@ -229,6 +288,41 @@ local function gen_tree(tokens)
         type = variables[token].type,
         name = variables[token].name,
         data_type = variables[token].data_type
+      })
+      i = i + 1
+
+    -- Подразумеваем, что токен это обращение к массиву
+    elseif token:find("^[0-9a-zA-Z_]+%[[a-zA-Z_0-9]+%]$") then
+      local name, value = token:match("^([0-9a-zA-Z_]+)%[([a-zA-Z_0-9]+)%]$")
+      if tonumber(value) then
+        value = tonumber(value)
+      end
+
+      table.insert(tree, {
+        type = "get_array",
+        value = value,
+        name = name
+      })
+      i = i + 1
+
+    elseif token:find("\".+\"") then
+      local buff = token:match("(\".+\")")
+      if not buff then
+        buff = "\"\""
+      end
+
+      -- Добавление в дерево
+      table.insert(tree, {
+        type = "string",
+        value = buff
+      })
+      i = i + 1
+
+    elseif token:find("^%d+$") then
+      -- Добавление в дерево
+      table.insert(tree, {
+        type = "int",
+        value = tonumber(token)
       })
       i = i + 1
 

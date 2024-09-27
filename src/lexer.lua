@@ -18,25 +18,16 @@ local function lexer(input)
 
     -- Запись токенов
     while token do
-      -- Обработка строк
-      if token:sub(1, 1) == "\"" then
-        local buff = line:match("(\".+\")")
-        if not buff then
-          buff = "\"\""
+      -- Сборка строки
+      if token:find("^\"") then
+        local buff = ""
+        while token and not token:find("\"$") do
+          buff = buff .. " ".. token
+          token = g_token()
         end
-
-        table.insert(tokens, {
-          type = "string",
-          value = buff
-        })
-        break
-
-      -- Предполагаем, что токен может быть числом
-      elseif token:find("^%d+$") then
-        table.insert(tokens, {
-          type = "int",
-          value = tonumber(token)
-        })
+        buff = buff .." ".. token
+        table.insert(tokens, buff)
+        goto continue
       end
 
       table.insert(tokens, token)
