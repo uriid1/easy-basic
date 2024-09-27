@@ -1,0 +1,7 @@
+INT a = 99
+
+IF 10 == 10 AND 30 != 10 THEN
+  IF a == 99 OR 1 AND 2 AND 0 == 0 THEN
+    PRINTL "Ok"
+  ENDIF 
+ENDIF

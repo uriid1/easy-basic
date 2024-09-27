@@ -1,0 +1,7 @@
+# Пример простого рандома
+# Рандом работает от двух значений min и max
+
+INT value = RANDOM 50 255
+PRINT "Random value: "
+PRINT value
+PRINT "\n"

@@ -1,0 +1,160 @@
+# Не рабочая версия, нужна реализация массивов
+# Игра "Жизнь"
+# Размер поля 3x3
+# Клетка 1 - живая, 0 - мёртвая
+
+# Инициализация начальной конфигурации клеток
+INT cell_1_1 = 0
+INT cell_1_2 = 1
+INT cell_1_3 = 0
+
+INT cell_2_1 = 1
+INT cell_2_2 = 1
+INT cell_2_3 = 0
+
+INT cell_3_1 = 0
+INT cell_3_2 = 0
+INT cell_3_3 = 1
+
+# Печать текущего состояния поля
+::print_grid::
+PRINT cell_1_1; PRINT " "; PRINT cell_1_2; PRINT " "; PRINT cell_1_3; PRINT "\n"
+PRINT cell_2_1; PRINT " "; PRINT cell_2_2; PRINT " "; PRINT cell_2_3; PRINT "\n"
+PRINT cell_3_1; PRINT " "; PRINT cell_3_2; PRINT " "; PRINT cell_3_3; PRINT "\n"
+
+PRINT "Следующее поколение...\n"
+
+# Подсчёт живых соседей клетки
+# Мы сделаем функцию для каждой клетки отдельно
+INT live_neighbors_1_1 = cell_1_2 + cell_2_1 + cell_2_2
+INT live_neighbors_1_2 = cell_1_1 + cell_1_3 + cell_2_1 + cell_2_2 + cell_2_3
+INT live_neighbors_1_3 = cell_1_2 + cell_2_2 + cell_2_3
+INT live_neighbors_2_1 = cell_1_1 + cell_1_2 + cell_2_2 + cell_3_1 + cell_3_2
+INT live_neighbors_2_2 = cell_1_1 + cell_1_2 + cell_1_3 + cell_2_1 + cell_2_3 + cell_3_1 + cell_3_2 + cell_3_3
+INT live_neighbors_2_3 = cell_1_2 + cell_1_3 + cell_2_2 + cell_3_2 + cell_3_3
+INT live_neighbors_3_1 = cell_2_1 + cell_2_2 + cell_3_2
+INT live_neighbors_3_2 = cell_2_1 + cell_2_2 + cell_2_3 + cell_3_1 + cell_3_3
+INT live_neighbors_3_3 = cell_2_2 + cell_2_3 + cell_3_2
+
+# Определяем новое состояние клеток на основе правил игры "Жизнь"
+::next_generation::
+
+# Клетка 1_1
+IF cell_1_1 == 1 THEN
+  IF live_neighbors_1_1 < 2 THEN
+    cell_1_1 = 0
+  ENDIF
+  IF live_neighbors_1_1 > 3 THEN
+    cell_1_1 = 0
+  ENDIF
+ENDIF
+IF cell_1_1 == 0 AND live_neighbors_1_1 == 3 THEN
+  cell_1_1 = 1
+ENDIF
+
+# Клетка 1_2
+IF cell_1_2 == 1 THEN
+  IF live_neighbors_1_2 < 2 THEN
+    cell_1_2 = 0
+  ENDIF
+  IF live_neighbors_1_2 > 3 THEN
+    cell_1_2 = 0
+  ENDIF
+ENDIF
+IF cell_1_2 == 0 AND live_neighbors_1_2 == 3 THEN
+  cell_1_2 = 1
+ENDIF
+
+# Клетка 1_3
+IF cell_1_3 == 1 THEN
+  IF live_neighbors_1_3 < 2 THEN
+    cell_1_3 = 0
+  ENDIF
+  IF live_neighbors_1_3 > 3 THEN
+    cell_1_3 = 0
+  ENDIF
+ENDIF
+IF cell_1_3 == 0 AND live_neighbors_1_3 == 3 THEN
+  cell_1_3 = 1
+ENDIF
+
+# Клетка 2_1
+IF cell_2_1 == 1 THEN
+  IF live_neighbors_2_1 < 2 THEN
+    cell_2_1 = 0
+  ENDIF
+  IF live_neighbors_2_1 > 3 THEN
+    cell_2_1 = 0
+  ENDIF
+ENDIF
+IF cell_2_1 == 0 AND live_neighbors_2_1 == 3 THEN
+  cell_2_1 = 1
+ENDIF
+
+# Клетка 2_2
+IF cell_2_2 == 1 THEN
+  IF live_neighbors_2_2 < 2 THEN
+    cell_2_2 = 0
+  ENDIF
+  IF live_neighbors_2_2 > 3 THEN
+    cell_2_2 = 0
+  ENDIF
+ENDIF
+IF cell_2_2 == 0 AND live_neighbors_2_2 == 3 THEN
+  cell_2_2 = 1
+ENDIF
+
+# Клетка 2_3
+IF cell_2_3 == 1 THEN
+  IF live_neighbors_2_3 < 2 THEN
+    cell_2_3 = 0
+  ENDIF
+  IF live_neighbors_2_3 > 3 THEN
+    cell_2_3 = 0
+  ENDIF
+ENDIF
+IF cell_2_3 == 0 AND live_neighbors_2_3 == 3 THEN
+  cell_2_3 = 1
+ENDIF
+
+# Клетка 3_1
+IF cell_3_1 == 1 THEN
+  IF live_neighbors_3_1 < 2 THEN
+    cell_3_1 = 0
+  ENDIF
+  IF live_neighbors_3_1 > 3 THEN
+    cell_3_1 = 0
+  ENDIF
+ENDIF
+IF cell_3_1 == 0 AND live_neighbors_3_1 == 3 THEN
+  cell_3_1 = 1
+ENDIF
+
+# Клетка 3_2
+IF cell_3_2 == 1 THEN
+  IF live_neighbors_3_2 < 2 THEN
+    cell_3_2 = 0
+  ENDIF
+  IF live_neighbors_3_2 > 3 THEN
+    cell_3_2 = 0
+  ENDIF
+ENDIF
+IF cell_3_2 == 0 AND live_neighbors_3_2 == 3 THEN
+  cell_3_2 = 1
+ENDIF
+
+# Клетка 3_3
+IF cell_3_3 == 1 THEN
+  IF live_neighbors_3_3 < 2 THEN
+    cell_3_3 = 0
+  ENDIF
+  IF live_neighbors_3_3 > 3 THEN
+    cell_3_3 = 0
+  ENDIF
+ENDIF
+IF cell_3_3 == 0 AND live_neighbors_3_3 == 3 THEN
+  cell_3_3 = 1
+ENDIF
+
+# Печать нового состояния поля
+GOTO print_grid

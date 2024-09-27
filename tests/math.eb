@@ -1,0 +1,7 @@
+INT a = 10 / 2
+a = a + 1
+a = a + 2
+INT b = a + 1
+
+PRINTL a
+PRINTL b

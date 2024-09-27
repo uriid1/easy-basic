@@ -1,0 +1,19 @@
+#!/bin/env lua
+
+local lexer = require("src.lexer")
+local gen_tree = require("src.gen_tree")
+local gen_code = require("src.gen_code")
+
+if not arg[1] then
+  error("Не задан файл .eb")
+end
+
+local fd = io.open(arg[1], "r")
+local source = fd:read("all")
+fd:close()
+
+local tokens = lexer(source)
+local tree, variables = gen_tree(tokens)
+local t_LUA_code = gen_code(tree, variables)
+local lua_source = table.concat(t_LUA_code, "\n")
+load(lua_source)()

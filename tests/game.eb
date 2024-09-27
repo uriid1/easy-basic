@@ -1,0 +1,95 @@
+# Игра угадай число
+# Задача собственно угадать число -
+# которое будет случайным образом задано, в начале игры
+
+# Очистка экрана (bash, sh)
+PRINT "\027\091\072\027\091\050\074\027\091\051\074"
+
+# Игрок
+INT money = 10000
+INT score = 0
+
+# Информируем о текущем статусе игрока
+::label_current_user_info::
+
+PRINT "Денег: "; PRINT money; PRINT "\n"
+PRINT "Очков: "; PRINT score; PRINT "\n"
+
+# Игра
+# Загадываем число
+INT game_value = RANDOM 1 3
+
+# Принимаем ставку
+::enter_bet::
+INT user_bet = READ "Ваша ставка: "
+user_bet = TONUMBER user_bet
+
+# Пользователь ввел ерунду
+IF user_bet == 0 THEN
+  PRINTL "Неверно!"
+  GOTO enter_bet
+ENDIF
+
+IF user_bet > money THEN
+  # Очистка экрана (bash, sh)
+  PRINT "\027\091\072\027\091\050\074\027\091\051\074"
+  PRINTL "Ваша ставка не может быть больше, чем есть у вас денег!"
+  GOTO label_current_user_info
+ENDIF
+
+# Принимаем число
+::enter_number::
+INT user_value = READ "Теперь число 1, 2 или 3: "
+user_value = TONUMBER user_value
+
+# Пользователь ввел ерунду
+IF user_value == 0 THEN
+  PRINTL "Неверно!"
+  GOTO enter_number
+ENDIF
+
+# Ввел число за диапазоном
+STRING wrong_number = "Вы должны ввести число 1, 2 или 3!"
+IF user_value < 1 THEN
+  PRINTL wrong_number
+  GOTO enter_number
+ENDIF
+IF user_value > 3 THEN
+  PPRINTL wrong_number
+  GOTO enter_number
+ENDIF
+
+# Пользователь угадал число
+IF user_value == game_value THEN
+  # Очистка экрана (bash, sh)
+  PRINT "\027\091\072\027\091\050\074\027\091\051\074"
+  PRINTL "Вы угадали! Ваши ставка удвоилась!"
+
+  INT win = user_bet * 2
+  money = money + win
+  score = score + 1
+
+  # Обновление статуса игрока
+  GOTO label_current_user_info
+ENDIF
+
+IF user_value != game_value THEN
+  # Очистка экрана (bash, sh)
+  PRINT "\027\091\072\027\091\050\074\027\091\051\074"
+  PRINTL "К сожалению, вы не угадали!"
+
+  money = money - user_bet
+  score = score - 1
+
+  # Если закончились деньги
+  IF money <= 0 THEN
+    GOTO game_over
+  ENDIF
+
+  # Обновление статуса игрока
+  GOTO label_current_user_info
+ENDIF
+
+# Конец игры
+::game_over::
+PRINTL "У вас больше нет денег, чтобы играть :("

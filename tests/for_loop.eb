@@ -1,0 +1,9 @@
+# Так можно сделать цикл
+
+INT i = 0
+::label_loop::
+IF i < 5 THEN
+  PRINTL i
+  i = i + 1
+  GOTO label_loop
+ENDIF

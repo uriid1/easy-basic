@@ -1,0 +1,5 @@
+STRING name = "uriid1"
+INT age = 11
+
+PRINT "My name: "; PRINT name; PRINT "\n"
+PRINT "My age: "; PRINT age; PRINT "\n"

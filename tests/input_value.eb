@@ -1,0 +1,2 @@
+STRING value = READ ""
+PRINTL value
